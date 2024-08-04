@@ -4,6 +4,7 @@ import br.com.socialties.domain.authentication.dtos.LoginRequestDto;
 import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
 import br.com.socialties.domain.authentication.exceptions.UserAlreadyExists;
 import br.com.socialties.domain.authentication.exceptions.UserNotFoundException;
+import br.com.socialties.domain.authentication.exceptions.UserPasswordMismatch;
 import br.com.socialties.domain.user.User;
 import br.com.socialties.domain.user.UserRepository;
 import br.com.socialties.infra.security.TokenService;
@@ -23,14 +24,14 @@ public class AuthService {
         var user = userRepository.findByEmail(loginRequestDto.email())
                 .orElseThrow(UserNotFoundException::new);
 
-        if(!passwordEncoder.matches(user.getPassword(), loginRequestDto.password())) {
-            throw new RuntimeException("Passwords do not match");
+        if(!passwordEncoder.matches(loginRequestDto.password(), user.getPassword())) {
+            throw new UserPasswordMismatch();
         }
 
         return tokenService.generateToken(user);
     }
 
-    public String register(RegisterRequestDto registerRequestDto) {
+    public User register(RegisterRequestDto registerRequestDto) {
         if(userRepository.existsByEmail(registerRequestDto.email())) {
             throw new UserAlreadyExists();
         }
@@ -40,8 +41,7 @@ public class AuthService {
         user.setName(registerRequestDto.name());
         user.setPassword(passwordEncoder.encode(registerRequestDto.password()));
 
-        var registeredUser = userRepository.save(user);
-        return tokenService.generateToken(registeredUser);
+        return userRepository.save(user);
     }
 
 }

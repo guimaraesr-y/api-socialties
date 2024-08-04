@@ -1,5 +1,9 @@
 package br.com.socialties.domain.authentication.dtos;
 
 public record RegisterResponseDto (
-        String token
+
+        String id,
+        String name,
+        String email
+
 ) {}

@@ -24,13 +24,12 @@ public class TokenService {
         try {
             var algorithm = getAlgorithm(secret);
 
-            String token = JWT.create()
+            // returns generated token
+            return JWT.create()
                     .withIssuer(issuer)
                     .withSubject(user.getEmail())
                     .withExpiresAt(this.generateExpirationDate())
                     .sign(algorithm);
-
-            return token;
         } catch (JWTCreationException exception) {
             throw new RuntimeException("Error while authenticating");
         }

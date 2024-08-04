@@ -2,7 +2,6 @@ package br.com.socialties.domain.authentication;
 
 import br.com.socialties.domain.authentication.dtos.LoginRequestDto;
 import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
-import br.com.socialties.domain.authentication.dtos.RegisterResponseDto;
 import br.com.socialties.domain.authentication.exceptions.UserAlreadyExists;
 import br.com.socialties.domain.authentication.exceptions.UserNotFoundException;
 import br.com.socialties.domain.user.User;

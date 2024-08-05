@@ -40,6 +40,8 @@ public class AuthService {
         user.setEmail(registerRequestDto.email());
         user.setName(registerRequestDto.name());
         user.setPassword(passwordEncoder.encode(registerRequestDto.password()));
+        user.setNumFollowers(0);
+        user.setNumFollowing(0);
 
         return userRepository.save(user);
     }

@@ -1,11 +1,11 @@
 package br.com.socialties.domain.user;
 
+import br.com.socialties.domain.post.Post;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
 
@@ -34,5 +34,8 @@ public class User {
 
     @ManyToMany
     private List<User> following;
+
+    @OneToMany
+    private List<Post> posts;
 
 }

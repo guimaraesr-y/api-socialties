@@ -1,9 +1,7 @@
 package br.com.socialties.domain.post;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import br.com.socialties.domain.user.User;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,5 +22,17 @@ public class Post {
     private String title;
     private String description;
     private List<String> contentPaths;
+
+    @ManyToOne
+    private User author;
+
+    private Integer likesCount;
+    private Integer dislikesCount;
+
+    @OneToMany
+    private List<User> likes;
+
+    @OneToMany
+    private List<User> dislikes;
 
 }

@@ -2,11 +2,13 @@ package br.com.socialties.infra.security;
 
 import br.com.socialties.domain.user.User;
 import br.com.socialties.domain.user.UserRepository;
+import br.com.socialties.infra.security.exceptions.AppSecurityException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,21 +27,29 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    SecurityExceptionHandler securityExceptionHandler;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        var token = this.recoverToken(request);
-        var login = tokenService.validateToken(token);
+        try {
+            var token = this.recoverToken(request);
 
-        if(login != null) {
-            User user = userRepository.findByEmail(login).orElseThrow(() -> new RuntimeException("User not found"));
+            if(token != null) {
+                var login = tokenService.validateToken(token);
+                User user = userRepository.findByEmail(login)
+                        .orElseThrow(() -> new AppSecurityException(HttpStatus.UNAUTHORIZED, "User not found"));
 
-            // system does not require roles
-            var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                // system does not require roles
+                var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+                var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+
+            filterChain.doFilter(request, response);
+        } catch (AppSecurityException e) {
+            securityExceptionHandler.handleException(e, response);
         }
-
-        filterChain.doFilter(request, response);
     }
 
     private String recoverToken(HttpServletRequest request) {

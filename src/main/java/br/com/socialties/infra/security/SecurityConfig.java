@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exceptionHandling ->
+                .exceptionHandling(exceptionHandling -> // deals with unauthorized requests to secured routes
                         exceptionHandling.authenticationEntryPoint(restAuthenticationEntryPoint)
                 );
 

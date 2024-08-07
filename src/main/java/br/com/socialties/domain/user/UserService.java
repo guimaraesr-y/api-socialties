@@ -2,6 +2,7 @@ package br.com.socialties.domain.user;
 
 import br.com.socialties.domain.authentication.exceptions.UserNotFoundException;
 import br.com.socialties.domain.user.exceptions.FollowYourselfException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;

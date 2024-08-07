@@ -1,6 +1,7 @@
-package br.com.socialties.domain.user;
+package br.com.socialties.domain.post.comment;
 
 import br.com.socialties.domain.post.Post;
+import br.com.socialties.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,34 +13,34 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private String name;
+    private String text;
 
-    @Column(unique = true)
-    private String email;
-    private String password;
+    @ManyToOne
+    private User author;
 
-    private Integer numFollowers;
-    private Integer numFollowing;
-
-    @ManyToMany
-    private List<User> followers;
-
-    @ManyToMany
-    private List<User> following;
+    private Integer likesCount;
+    private Integer dislikesCount;
 
     @OneToMany
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "comment_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Post> posts;
+    private List<User> likes;
+
+    @OneToMany
+    @JoinColumn(name = "comment_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<User> dislikes;
+
+    @ManyToOne
+    private Post post;
 
 }

@@ -6,12 +6,10 @@ import br.com.socialties.domain.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/post")
@@ -31,6 +29,22 @@ public class PostController {
                 post.getDescription(),
                 post.getContentPaths()
         );
+    }
+
+    @PostMapping("/{postId}/like")
+    public Map<String, Boolean> likePost(@PathVariable String postId, Principal principal) {
+        var loggedUser = (User) ((Authentication) principal).getPrincipal();
+        var liked = postService.likePost(postId, loggedUser);
+
+        return Map.of("liked", liked);
+    }
+
+    @PostMapping("/{postId}/dislike")
+    public Map<String, Boolean> dislikePost(@PathVariable String postId, Principal principal) {
+        var loggedUser = (User) ((Authentication) principal).getPrincipal();
+        var disliked = postService.dislikePost(postId, loggedUser);
+
+        return Map.of("disliked", disliked);
     }
 
 }

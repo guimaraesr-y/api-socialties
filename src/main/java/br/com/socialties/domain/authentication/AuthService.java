@@ -8,12 +8,14 @@ import br.com.socialties.domain.authentication.exceptions.UserPasswordMismatch;
 import br.com.socialties.domain.user.User;
 import br.com.socialties.domain.user.UserRepository;
 import br.com.socialties.infra.security.TokenService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -44,6 +46,10 @@ public class AuthService {
         user.setNumFollowing(0);
 
         return userRepository.save(user);
+    }
+
+    public void deleteUser(User john) {
+        userRepository.delete(john);
     }
 
 }

@@ -44,7 +44,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void corrtectLogin() {
+    public void correctLogin() {
         var token = authService
                 .login(new LoginRequestDto("johndoe@example.com", "password"));
 

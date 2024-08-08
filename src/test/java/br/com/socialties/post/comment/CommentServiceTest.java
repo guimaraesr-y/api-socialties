@@ -4,7 +4,6 @@ import br.com.socialties.domain.authentication.AuthService;
 import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
 import br.com.socialties.domain.post.Post;
 import br.com.socialties.domain.post.PostService;
-import br.com.socialties.domain.post.comment.Comment;
 import br.com.socialties.domain.post.comment.CommentService;
 import br.com.socialties.domain.post.comment.dtos.CreateCommentRequestDto;
 import br.com.socialties.domain.post.dtos.CreatePostRequestDto;

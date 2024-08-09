@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +47,16 @@ public class PostService {
         }
 
         return postRepository.save(post);
+    }
+
+    public List<Post> getPosts() {
+        // TODO: implement pagination
+        return postRepository.findAll();
+    }
+
+    public List<Post> getPostsByUser(String userId) {
+        var user = userService.findUser(userId);
+        return postRepository.findAllByAuthor(user);
     }
 
     public Boolean likePost(String postId, User loggedUser) {
@@ -95,4 +106,5 @@ public class PostService {
     public void deletePost(Post post) {
         postRepository.delete(post);
     }
+
 }

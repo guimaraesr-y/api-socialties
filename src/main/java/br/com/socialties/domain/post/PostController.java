@@ -2,6 +2,7 @@ package br.com.socialties.domain.post;
 
 import br.com.socialties.domain.post.dtos.CreatePostRequestDto;
 import br.com.socialties.domain.post.dtos.CreatePostResponseDto;
+import br.com.socialties.domain.post.dtos.PostDto;
 import br.com.socialties.domain.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,6 +31,28 @@ public class PostController {
                 post.getDescription(),
                 post.getContentPaths()
         );
+    }
+
+    @GetMapping
+    public List<PostDto> getPosts() {
+        return postService.getPosts()
+                .stream().map(PostDto::fromPost).toList();
+    }
+
+    @GetMapping("/{postId}")
+    public PostDto getPost(@PathVariable String postId) {
+        return PostDto.fromPost(postService.findPost(postId));
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<PostDto> getPostsByUser(@PathVariable String userId) {
+        return postService.getPostsByUser(userId)
+                .stream().map(PostDto::fromPost).toList();
+    }
+
+    @DeleteMapping("/{postId}")
+    public void deletePost(@PathVariable String postId) {
+        postService.deletePost(postService.findPost(postId));
     }
 
     @PostMapping("/{postId}/like")

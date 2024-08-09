@@ -32,9 +32,11 @@ public class User {
     private Integer numFollowing;
 
     @ManyToMany
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private List<User> followers;
 
     @ManyToMany
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private List<User> following;
 
     @OneToMany

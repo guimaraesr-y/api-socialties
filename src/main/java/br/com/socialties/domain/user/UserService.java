@@ -1,9 +1,12 @@
 package br.com.socialties.domain.user;
 
 import br.com.socialties.domain.authentication.exceptions.UserNotFoundException;
+import br.com.socialties.domain.user.dtos.FollowUserRequestDto;
+import br.com.socialties.domain.user.dtos.UpdateUserRequestDto;
 import br.com.socialties.domain.user.exceptions.FollowYourselfException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,51 +17,68 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public User findUser(User user) {
         return userRepository.findById(user.getId())
                 .orElseThrow(UserNotFoundException::new);
     }
 
-    private User findUser(String userId) {
+    public User findUser(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
     }
 
-    public List<User> getFollowers(User loggedUser) {
-        var user = findUser(loggedUser);
-        return user.getFollowers();
+    public User updateUser(User loggedUser, UpdateUserRequestDto updateUserRequestDto) {
+        var userEdit = findUser(loggedUser);
+
+        userEdit.setName(updateUserRequestDto.name());
+        if(updateUserRequestDto.password().isPresent()) {
+            var password = updateUserRequestDto.password().get();
+            userEdit.setPassword(passwordEncoder.encode(passwordEncoder.encode(password)));
+        }
+
+        return userRepository.save(userEdit);
     }
 
-    public List<User> getFollowing(User loggedUser) {
-        var user = findUser(loggedUser);
-        return user.getFollowing();
+    public List<User> getFollowers(User user) {
+        var foundUser = findUser(user);
+        return foundUser.getFollowers();
     }
 
-    public void follow(User loggedUser, String userId) {
+    public List<User> getFollowing(User user) {
+        var foundUser = findUser(user);
+        return foundUser.getFollowing();
+    }
+
+    public void follow(User loggedUser, FollowUserRequestDto followUserRequestDto) {
+        var logged = findUser(loggedUser);
+
         // check if target user exists
-        var user = findUser(userId);
+        var user = findUser(followUserRequestDto.userId());
 
-        if(user.getId().equals(loggedUser.getId())) {
+        if(user.getId().equals(logged.getId())) {
             throw new FollowYourselfException();
         }
 
         // check if user is already following
-        if (user.getFollowers().contains(loggedUser)) {
+        if (user.getFollowers().contains(logged)) {
             return;
         }
 
         // follow
-        user.getFollowers().add(loggedUser);
-        user.setNumFollowers(user.getFollowers().size());
-        userRepository.save(user);
+        user.getFollowers().add(logged);
+        user.setNumFollowers(user.getNumFollowers() + 1);
+
+        logged.setNumFollowing(logged.getNumFollowing() + 1);
+        logged.getFollowing().add(user);
     }
 
-    public void unfollow(User loggedUser, String userId) {
+    public void unfollow(User loggedUser, FollowUserRequestDto followUserRequestDto) {
         var logged = findUser(loggedUser);
-        // check if target user exists
-        var user = findUser(userId);
 
+        // check if target user exists
+        var user = findUser(followUserRequestDto.userId());
 
         if(user.getId().equals(logged.getId())) {
             throw new FollowYourselfException();

@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -44,6 +46,10 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(registerRequestDto.password()));
         user.setNumFollowers(0);
         user.setNumFollowing(0);
+
+        user.setFollowers(new ArrayList<>());
+        user.setFollowing(new ArrayList<>());
+        user.setPosts(new ArrayList<>());
 
         return userRepository.save(user);
     }

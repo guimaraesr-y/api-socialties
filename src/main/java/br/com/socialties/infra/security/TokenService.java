@@ -20,6 +20,10 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
+    // Given in days
+    @Value("${api.security.token.expires}")
+    private Long expires;
+
     private final String issuer = "api-socialties";
 
     public String generateToken(User user) {
@@ -51,7 +55,7 @@ public class TokenService {
     }
 
     private Instant generateExpirationDate() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-3"));
+        return LocalDateTime.now().plusDays(expires).toInstant(ZoneOffset.of("-3"));
     }
 
     private Algorithm getAlgorithm(String secret) {

@@ -5,6 +5,7 @@ import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
 import br.com.socialties.domain.authentication.exceptions.UserAlreadyExists;
 import br.com.socialties.domain.authentication.exceptions.UserNotFoundException;
 import br.com.socialties.domain.authentication.exceptions.UserPasswordMismatch;
+import br.com.socialties.domain.storage.StorageService;
 import br.com.socialties.domain.user.User;
 import br.com.socialties.domain.user.UserRepository;
 import br.com.socialties.infra.security.TokenService;
@@ -22,6 +23,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final StorageService storageService;
     private final TokenService tokenService;
 
     public String login(LoginRequestDto loginRequestDto) {
@@ -50,6 +52,12 @@ public class AuthService {
         user.setFollowers(new ArrayList<>());
         user.setFollowing(new ArrayList<>());
         user.setPosts(new ArrayList<>());
+
+        if(registerRequestDto.profilePicture().isPresent()) {
+            var profilePicturePath = storageService
+                    .store(registerRequestDto.profilePicture().get());
+            user.setProfilePicturePath(profilePicturePath);
+        }
 
         return userRepository.save(user);
     }

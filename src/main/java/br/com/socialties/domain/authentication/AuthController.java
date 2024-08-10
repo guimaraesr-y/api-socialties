@@ -7,10 +7,7 @@ import br.com.socialties.domain.authentication.dtos.RegisterResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -26,9 +23,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDto> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
+    public RegisterResponseDto register(@Valid @ModelAttribute RegisterRequestDto registerRequestDto) {
         var user = service.register(registerRequestDto);
-        return ResponseEntity.ok(new RegisterResponseDto(user.getId(), user.getName(), user.getEmail()));
+        return RegisterResponseDto.fromUser(user);
     }
 
 }

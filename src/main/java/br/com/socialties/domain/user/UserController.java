@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @PutMapping
-    public UserDto update(@Valid @RequestBody UpdateUserRequestDto updateUserRequestDto, Principal principal) {
+    public UserDto update(@Valid @ModelAttribute UpdateUserRequestDto updateUserRequestDto, Principal principal) {
         var loggedUser = (User) ((Authentication) principal).getPrincipal();
         return UserDto.fromUser(userService.updateUser(loggedUser, updateUserRequestDto));
     }

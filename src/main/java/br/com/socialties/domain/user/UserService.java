@@ -1,6 +1,7 @@
 package br.com.socialties.domain.user;
 
 import br.com.socialties.domain.authentication.exceptions.UserNotFoundException;
+import br.com.socialties.domain.storage.StorageService;
 import br.com.socialties.domain.user.dtos.FollowUserRequestDto;
 import br.com.socialties.domain.user.dtos.UpdateUserRequestDto;
 import br.com.socialties.domain.user.exceptions.FollowYourselfException;
@@ -17,6 +18,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final StorageService storageService;
     private final PasswordEncoder passwordEncoder;
 
     public User findUser(User user) {
@@ -39,6 +41,13 @@ public class UserService {
         if(updateUserRequestDto.password().isPresent()) {
             var password = updateUserRequestDto.password().get();
             userEdit.setPassword(passwordEncoder.encode(passwordEncoder.encode(password)));
+        }
+
+        if(updateUserRequestDto.profilePicture().isPresent()) {
+            storageService.delete(userEdit.getProfilePicturePath());
+            var profilePicturePath = storageService
+                    .store(updateUserRequestDto.profilePicture().get());
+            userEdit.setProfilePicturePath(profilePicturePath);
         }
 
         return userRepository.save(userEdit);

@@ -1,8 +1,12 @@
 package br.com.socialties.domain.authentication.dtos;
 
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Optional;
 
 public record RegisterRequestDto (
+
         @NotBlank(message = "Name field should not be blank")
         String name,
 
@@ -10,5 +14,8 @@ public record RegisterRequestDto (
         String email,
 
         @NotBlank(message = "Password field should not be blank")
-        String password
+        String password,
+
+        Optional<MultipartFile> profilePicture
+
 ) {}

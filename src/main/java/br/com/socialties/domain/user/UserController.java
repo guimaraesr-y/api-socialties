@@ -26,7 +26,7 @@ public class UserController {
         return UserDto.fromUser(user);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{userId}")
     public UserDto getUserData(@PathVariable String userId) {
         return UserDto.fromUser(userService.findUser(userId));
     }

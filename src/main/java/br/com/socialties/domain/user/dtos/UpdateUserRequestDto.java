@@ -6,8 +6,7 @@ import java.util.Optional;
 
 public record UpdateUserRequestDto(
 
-        @NotBlank(message = "Name cannot be blank")
-        String name,
+        Optional<String> name,
         Optional<String> password
 
 ) {}

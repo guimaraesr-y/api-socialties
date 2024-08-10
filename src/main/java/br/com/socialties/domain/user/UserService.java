@@ -32,7 +32,10 @@ public class UserService {
     public User updateUser(User loggedUser, UpdateUserRequestDto updateUserRequestDto) {
         var userEdit = findUser(loggedUser);
 
-        userEdit.setName(updateUserRequestDto.name());
+        if(updateUserRequestDto.name().isPresent()) {
+            userEdit.setName(updateUserRequestDto.name().get());
+        }
+
         if(updateUserRequestDto.password().isPresent()) {
             var password = updateUserRequestDto.password().get();
             userEdit.setPassword(passwordEncoder.encode(passwordEncoder.encode(password)));

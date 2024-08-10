@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,10 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final PostService postService;
+
+    public Comment findComment(String commentId) {
+        return commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
+    }
 
     public Comment createComment(String postId, CreateCommentRequestDto createCommentRequestDto, User loggedUser) {
         var user = userService.findUser(loggedUser);
@@ -34,8 +40,10 @@ public class CommentService {
         comment.setLikesCount(0);
         comment.setDislikesCount(0);
 
-        commentRepository.save(comment);
-        return comment;
+        post.setCommentsCount(post.getCommentsCount() + 1);
+        post.getComments().add(comment);
+
+        return commentRepository.save(comment);
     }
 
     public Boolean likeComment(String commentId, User loggedUser) {
@@ -48,13 +56,14 @@ public class CommentService {
         if(comment.getLikes().contains(user)) {
             comment.getLikes().remove(loggedUser);
             comment.setLikesCount(comment.getLikesCount() - 1);
+            commentRepository.save(comment);
             return false;
         }
 
         comment.getLikes().add(loggedUser);
         comment.setLikesCount(comment.getLikesCount() + 1);
-
         commentRepository.save(comment);
+
         return true;
     }
 
@@ -78,8 +87,7 @@ public class CommentService {
         return true;
     }
 
-    public Comment findComment(String commentId) {
-        return commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
+    public List<Comment> getCommentsByPost(String postId) {
+        return commentRepository.findAllByPostId(postId);
     }
-
 }

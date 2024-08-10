@@ -10,6 +10,9 @@ public record PostDto (
     String id,
     String title,
     String description,
+    Integer likesCount,
+    Integer dislikesCount,
+    Integer commentsCount,
     List<String> contentPaths,
     UserNoRelationshipDto author
 
@@ -20,6 +23,9 @@ public record PostDto (
                 post.getId(),
                 post.getTitle(),
                 post.getDescription(),
+                post.getLikesCount(),
+                post.getDislikesCount(),
+                post.getCommentsCount(),
                 post.getContentPaths(),
                 UserNoRelationshipDto.fromUser(post.getAuthor())
         );

@@ -3,6 +3,7 @@ package br.com.socialties.domain.post;
 import br.com.socialties.domain.post.dtos.CreatePostRequestDto;
 import br.com.socialties.domain.post.dtos.CreatePostResponseDto;
 import br.com.socialties.domain.post.dtos.PostDto;
+import br.com.socialties.domain.post.dtos.UpdatePostRequestDto;
 import br.com.socialties.domain.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,11 @@ public class PostController {
     public List<PostDto> getPostsByUser(@PathVariable String userId) {
         return postService.getPostsByUser(userId)
                 .stream().map(PostDto::fromPost).toList();
+    }
+
+    @PutMapping("/{postId}")
+    public PostDto updatePost(@PathVariable String postId, @ModelAttribute UpdatePostRequestDto createPostRequestDto) {
+        return PostDto.fromPost(postService.updatePost(postId, createPostRequestDto));
     }
 
     @DeleteMapping("/{postId}")

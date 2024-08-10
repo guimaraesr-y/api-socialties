@@ -1,6 +1,7 @@
 package br.com.socialties.domain.post;
 
 import br.com.socialties.domain.post.dtos.CreatePostRequestDto;
+import br.com.socialties.domain.post.dtos.UpdatePostRequestDto;
 import br.com.socialties.domain.post.exceptions.PostNotFoundException;
 import br.com.socialties.domain.storage.StorageService;
 import br.com.socialties.domain.user.User;
@@ -101,6 +102,29 @@ public class PostService {
 
     public Post findPost(String postId) {
         return postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+    }
+
+    public Post updatePost(String postId, UpdatePostRequestDto createPostRequestDto) {
+        var post = findPost(postId);
+
+        if(createPostRequestDto.title().isPresent()) {
+            post.setTitle(createPostRequestDto.title().get());
+        }
+
+        if(createPostRequestDto.description().isPresent()) {
+            post.setDescription(createPostRequestDto.description().get());
+        }
+
+        if(createPostRequestDto.contents().isPresent()) {
+            post.getContentPaths().forEach(storageService::delete);
+            post.getContentPaths().clear();
+
+            for (MultipartFile file : createPostRequestDto.contents().get()) {
+                post.getContentPaths().add(storageService.store(file));
+            }
+        }
+
+        return postRepository.save(post);
     }
 
     public void deletePost(Post post) {

@@ -15,7 +15,7 @@
 O projeto ainda está em desenvolvimento e as próximas atualizações serão voltadas para as seguintes tarefas:
 
 - [x] Criação de publicações com curtidas e comentários
-- [ ] Edição de posts
+- [x] Edição de posts
 - [ ] Imagem para o perfil
 - [ ] Adicionar configuração de ambiente por .env
 - [ ] Configurar Dockerfile para execução em container

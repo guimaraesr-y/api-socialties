@@ -104,6 +104,11 @@ public class StorageService {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
     }
 
+    public void delete(String filename) {
+        Path file = load(filename);
+        FileSystemUtils.deleteRecursively(file.toFile());
+    }
+
     public void init() {
         try {
             Files.createDirectories(rootLocation);
@@ -113,6 +118,13 @@ public class StorageService {
         }
     }
 
+    /**
+     * Generates a unique filename by combining the current timestamp, a random UUID, and the original filename,
+     * and then hashing the resulting string using the MD5 algorithm.
+     *
+     * @param filename	the original filename to be used in generating the unique filename
+     * @return         	a unique filename with an MD5 hash suffix
+     */
     private String generateFileName(String filename) {
         MessageDigest md;
         try {

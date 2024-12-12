@@ -33,10 +33,10 @@ public class UserServiceTest {
     public void setup() {
         try {
             john = authService.register(
-                    new RegisterRequestDto("John Doe", "johndoe@exameple.com", "password")
+                    new RegisterRequestDto("John Doe", "johndoe@exameple.com", "password", Optional.empty())
             );
             jane = authService.register(
-                    new RegisterRequestDto("Jane Doe", "janedoe@exameple.com", "password")
+                    new RegisterRequestDto("Jane Doe", "janedoe@exameple.com", "password", Optional.empty())
             );
 
             userService.follow(john, new FollowUserRequestDto(jane.getId()));
@@ -86,11 +86,12 @@ public class UserServiceTest {
     public void updateUser() {
         var updatedUser = userService.updateUser(
                 john,
-                new UpdateUserRequestDto("John Doe Edited", Optional.of("updatedpassword")));
+                new UpdateUserRequestDto(Optional.of("John Doe Edited"), Optional.of("updatedpassword"), Optional.empty()) );
 
         var updatedUser2 = userService.updateUser(
                 john,
-                new UpdateUserRequestDto("John Doe Edited 2", Optional.empty()) );
+                new UpdateUserRequestDto(Optional.of("John Doe Edited 2"), Optional.empty(), Optional.empty())
+        );
 
         Assertions.assertEquals("John Doe Edited 2", updatedUser.getName());
         Assertions.assertEquals(updatedUser.getPassword(), updatedUser2.getPassword());

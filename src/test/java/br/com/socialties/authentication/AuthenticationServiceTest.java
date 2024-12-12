@@ -4,10 +4,14 @@ import br.com.socialties.domain.authentication.AuthService;
 import br.com.socialties.domain.authentication.dtos.LoginRequestDto;
 import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
 import br.com.socialties.domain.user.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Optional;
 
 @SpringBootTest
 public class AuthenticationServiceTest {
@@ -15,17 +19,34 @@ public class AuthenticationServiceTest {
     @Autowired
     private AuthService authService;
 
+    private User john;
+
+    public void setup() {
+        john = authService.register(
+                new RegisterRequestDto("John Doe", "johndoe@example.com", "password", Optional.empty())
+        );
+    }
+
+    public void cleanup() {
+        authService.deleteUser(john);
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        setup();
+    }
+
+    @AfterEach
+    public void afterEach() {
+        cleanup();
+    }
+
     @Test
     public void register() {
-        var john = authService.register(
-                new RegisterRequestDto("John Doe", "johndoe@example.com", "password")
-        );
-
         var jane = authService.register(
-                new RegisterRequestDto("Jane Doe", "janedoe@example.com", "password")
+                new RegisterRequestDto("Jane Doe", "janedoe@example.com", "password", Optional.empty())
         );
 
-        Assertions.assertNotNull(john);
         Assertions.assertNotNull(jane);
     }
 
@@ -34,7 +55,7 @@ public class AuthenticationServiceTest {
         User john;
         try {
             john = authService.register(
-                    new RegisterRequestDto("John Doe", "johndoe@example.com", "password")
+                    new RegisterRequestDto("John Doe", "johndoe@example.com", "password", Optional.empty())
             );
         } catch (Exception e) {
             john = null;
@@ -47,7 +68,6 @@ public class AuthenticationServiceTest {
     public void correctLogin() {
         var token = authService
                 .login(new LoginRequestDto("johndoe@example.com", "password"));
-
 
         Assertions.assertNotNull(token);
     }

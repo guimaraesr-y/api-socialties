@@ -12,6 +12,8 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+
 @SpringBootTest
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 public class CommentServiceTest {
@@ -31,11 +33,11 @@ public class CommentServiceTest {
 
     public void setup() {
         john = authService.register(
-                new RegisterRequestDto("John Doe", "johndoe@exameple.com", "password")
+                new RegisterRequestDto("John Doe", "johndoe@exameple.com", "password", Optional.empty())
         );
 
         jane = authService.register(
-                new RegisterRequestDto("Jane Doe", "janedoe@exameple.com", "password")
+                new RegisterRequestDto("Jane Doe", "janedoe@exameple.com", "password", Optional.empty())
         );
 
         firstPost = postService.createNewPost(

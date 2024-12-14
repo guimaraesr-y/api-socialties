@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -25,9 +24,9 @@ public class UserController extends BaseController {
     private final UserAuthorization userAuthorization;
 
     @GetMapping("/me")
-    public UserDto me(Principal principal) {
-        var user = userService.findUser((User) ((Authentication) principal).getPrincipal());
-        return UserDto.fromUser(user);
+    public UserDto me() {
+        var loggedUser = this.getLoggedUser();
+        return UserDto.fromUser(loggedUser);
     }
 
     @GetMapping("/{userId}")
@@ -66,16 +65,16 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/follow")
-    public ResponseEntity<Void> follow(@Valid @RequestBody FollowUserRequestDto followUserRequestDto, Principal principal) {
-        var loggedUser = (User) ((Authentication) principal).getPrincipal();
+    public ResponseEntity<Void> follow(@Valid @RequestBody FollowUserRequestDto followUserRequestDto) {
+        var loggedUser = this.getLoggedUser();
         userService.follow(loggedUser, followUserRequestDto);
 
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/unfollow")
-    public ResponseEntity<Void> unfollow(@Valid @RequestBody FollowUserRequestDto followUserRequestDto, Principal principal) {
-        var loggedUser = (User) ((Authentication) principal).getPrincipal();
+    public ResponseEntity<Void> unfollow(@Valid @RequestBody FollowUserRequestDto followUserRequestDto) {
+        var loggedUser = this.getLoggedUser();
         userService.unfollow(loggedUser, followUserRequestDto);
 
         return ResponseEntity.ok().build();

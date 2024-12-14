@@ -120,7 +120,7 @@ Sinta-se livre para participar ou compartilhar ideias. Toda contribuição é be
 
 ## 😄 Seja um dos contribuidores
 
-Quer fazer parte desse projeto? Clique [AQUI](docs/CONTRIBUTING.md) e leia como contribuir.
+Quer fazer parte desse projeto? Clique para ler o [Guia de Contribuição](docs/CONTRIBUTING.md) e saber como contribuir.
 
 ## 📝 Licença
 

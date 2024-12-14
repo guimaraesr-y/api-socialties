@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -64,6 +63,14 @@ public class UserController extends BaseController {
                 .stream().map(UserDto::fromUser).toList();
     }
 
+    @GetMapping("/{userId}/follow-requests")
+    @PreAuthorize("@userAuthorization.isOwner(#userId)")
+    public List<UserDto> followRequests(@PathVariable String userId) {
+        var user = userService.findUser(userId);
+        return userService.getRequestFollowers(user)
+                .stream().map(UserDto::fromUser).toList();
+    }
+
     @PostMapping("/follow")
     public ResponseEntity<Void> follow(@Valid @RequestBody FollowUserRequestDto followUserRequestDto) {
         var loggedUser = this.getLoggedUser();
@@ -77,6 +84,20 @@ public class UserController extends BaseController {
         var loggedUser = this.getLoggedUser();
         userService.unfollow(loggedUser, followUserRequestDto);
 
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{userId}/follow-request/accept")
+    public ResponseEntity<Void> acceptFollowRequest(@PathVariable String userId) {
+        var loggedUser = this.getLoggedUser();
+        userService.acceptFollower(loggedUser, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{userId}/follow-request/reject")
+    public ResponseEntity<Void> rejectFollowRequest(@PathVariable String userId) {
+        var loggedUser = this.getLoggedUser();
+        userService.acceptFollower(loggedUser, userId);
         return ResponseEntity.ok().build();
     }
 

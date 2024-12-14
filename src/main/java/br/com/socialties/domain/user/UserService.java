@@ -63,47 +63,47 @@ public class UserService {
         return foundUser.getFollowing();
     }
 
+    public List<User> getRequestFollowers(User user) {
+        var foundUser = findUser(user);
+        return foundUser.getRequestFollowers();
+    }
+
     public void follow(User loggedUser, FollowUserRequestDto followUserRequestDto) {
         var logged = findUser(loggedUser);
-
-        // check if target user exists
         var user = findUser(followUserRequestDto.userId());
 
         if(user.getId().equals(logged.getId())) {
             throw new FollowYourselfException();
         }
 
-        // check if user is already following
-        if (user.getFollowers().contains(logged)) {
-            return;
-        }
-
-        // follow
-        user.getFollowers().add(logged);
-        user.setNumFollowers(user.getNumFollowers() + 1);
-
-        logged.setNumFollowing(logged.getNumFollowing() + 1);
-        logged.getFollowing().add(user);
+        logged.follow(user);
+        userRepository.save(logged);
+        userRepository.save(user);
     }
 
     public void unfollow(User loggedUser, FollowUserRequestDto followUserRequestDto) {
         var logged = findUser(loggedUser);
-
-        // check if target user exists
         var user = findUser(followUserRequestDto.userId());
 
         if(user.getId().equals(logged.getId())) {
             throw new FollowYourselfException();
         }
 
-        // check if is following
-        if (!user.getFollowers().contains(logged)) {
-            return;
-        }
-
-        // unfollow
-        user.getFollowers().remove(logged);
-        user.setNumFollowers(user.getFollowers().size());
+        logged.unfollow(user);
+        userRepository.save(logged);
         userRepository.save(user);
     }
+
+    public void acceptFollower(User loggedUser, String requestFollowerId) {
+        var logged = findUser(loggedUser);
+        var requestFollower = findUser(requestFollowerId);
+
+        logged.acceptFollower(requestFollower);
+
+        userRepository.save(logged);
+        userRepository.save(requestFollower);
+    }
+
+
+
 }

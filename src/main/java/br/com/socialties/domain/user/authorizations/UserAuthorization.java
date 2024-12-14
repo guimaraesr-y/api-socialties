@@ -18,6 +18,22 @@ public class UserAuthorization extends BaseController {
     private UserRepository userRepository;
 
     /**
+     * Determines if the logged-in user is the owner of the specified resource.
+     * Throws a ResourceOwnershipException if the logged-in user is not the owner.
+     *
+     * @param id the ID of the user to be checked
+     * @return true if the logged-in user is the owner of the specified user
+     */
+    public boolean isOwner(String id) {
+        User logged = this.getLoggedUser();
+        if (!logged.getId().equals(id)) {
+            throw new ResourceOwnershipException();
+        }
+
+        return true;
+    }
+
+    /**
      * Determines if the logged-in user has permission to read the specified user's data.
      * Throws a UserNotFoundException if the specified user does not exist.
      * Throws a PrivateUserException if the user is private and the logged-in user is not the owner,
@@ -34,15 +50,14 @@ public class UserAuthorization extends BaseController {
         }
 
         if(
-                logged.getId().equals(user.getId()) ||  // Check if is the same user
-                user.getIsPublic() ||                   // Check if user is public
-                user.getFollowers().contains(logged)   // Check if user is following
+                !logged.getId().equals(user.getId()) &&  // Check if is the same user
+                !user.getIsPublic() &&                   // Check if user is public
+                !user.getFollowers().contains(logged)   // Check if user is following
         ) {
             throw new PrivateUserException();
         }
 
         return true;
-
     }
 
     /**

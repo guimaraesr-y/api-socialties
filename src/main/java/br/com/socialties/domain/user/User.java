@@ -35,15 +35,12 @@ public class User {
     private Integer numFollowing;
 
     @ManyToMany
-    @OnDelete(action = OnDeleteAction.SET_NULL)
     private List<User> followers;
 
     @ManyToMany
-    @OnDelete(action = OnDeleteAction.SET_NULL)
     private List<User> following;
 
     @ManyToMany
-    @OnDelete(action = OnDeleteAction.SET_NULL)
     private List<User> requestFollowers;
 
     @OneToMany
@@ -53,7 +50,10 @@ public class User {
 
     public void follow(User user) {
         if (isFollowing(user)) return;
-        if (!user.isPublic) user.addRequestFollower(this);
+        if (!user.isPublic) {
+            user.addRequestFollower(this);
+            return;
+        };
 
         following.add(user);
         user.followers.add(this);

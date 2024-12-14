@@ -2,6 +2,7 @@ package br.com.socialties.domain.user;
 
 import br.com.socialties.domain.user.authorizations.UserAuthorization;
 import br.com.socialties.domain.user.dtos.FollowUserRequestDto;
+import br.com.socialties.domain.user.dtos.PrivateUserDto;
 import br.com.socialties.domain.user.dtos.UpdateUserRequestDto;
 import br.com.socialties.domain.user.dtos.UserDto;
 import br.com.socialties.helpers.controllers.BaseController;
@@ -30,8 +31,15 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("/{userId}")
-    public UserDto getUserData(@PathVariable String userId) {
-        return UserDto.fromUser(userService.findUser(userId));
+    public ResponseEntity<?> getUserData(@PathVariable String userId) {
+        try {
+            userAuthorization.canRead(userId);
+            UserDto userDto = UserDto.fromUser(userService.findUser(userId));
+            return ResponseEntity.ok(userDto);
+        } catch (Exception e) {
+            PrivateUserDto privateUserDto = PrivateUserDto.fromUser(userService.findUser(userId));
+            return ResponseEntity.ok(privateUserDto);
+        }
     }
 
     @PutMapping("/{userId}")

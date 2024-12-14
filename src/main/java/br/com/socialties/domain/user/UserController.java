@@ -4,6 +4,7 @@ import br.com.socialties.domain.user.dtos.FollowUserRequestDto;
 import br.com.socialties.domain.user.dtos.UpdateUserRequestDto;
 import br.com.socialties.domain.user.dtos.UserDto;
 import br.com.socialties.domain.user.dtos.UserNoRelationshipDto;
+import br.com.socialties.domain.user.exceptions.ResourceOwnershipException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +32,15 @@ public class UserController {
         return UserDto.fromUser(userService.findUser(userId));
     }
 
-    @PutMapping
-    public UserDto update(@Valid @ModelAttribute UpdateUserRequestDto updateUserRequestDto, Principal principal) {
+    @PutMapping("/{userId}")
+    public UserDto update(@Valid @ModelAttribute UpdateUserRequestDto updateUserRequestDto, @PathVariable String userId, Principal principal) {
         var loggedUser = (User) ((Authentication) principal).getPrincipal();
+        // TODO: Implement level authorization to update user, for now only the user can update their own data
+
+        if (!loggedUser.getId().equals(userId)) {
+            throw new ResourceOwnershipException();
+        }
+
         return UserDto.fromUser(userService.updateUser(loggedUser, updateUserRequestDto));
     }
 

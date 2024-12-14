@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class ResourceOwnershipException extends ApplicationException {
 
     public ResourceOwnershipException() {
-        super(HttpStatus.UNAUTHORIZED, "You cannot access this resource, because it does not belong to you");
+        super(HttpStatus.UNAUTHORIZED, "You are not allowed to access this resource");
     }
 
 }

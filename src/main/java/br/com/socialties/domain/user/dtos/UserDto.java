@@ -12,9 +12,7 @@ public record UserDto(
         String profilePicturePath,
         Boolean isPublic,
         Integer numFollowers,
-        Integer numFollowing,
-        List<UserNoRelationshipDto> followers,
-        List<UserNoRelationshipDto> following
+        Integer numFollowing
 
 ) {
     public static UserDto fromUser(User user) {
@@ -25,9 +23,7 @@ public record UserDto(
                 user.getProfilePicturePath(),
                 user.getIsPublic(),
                 user.getNumFollowers(),
-                user.getNumFollowing(),
-                user.getFollowers().stream().map(UserNoRelationshipDto::fromUser).toList(),
-                user.getFollowing().stream().map(UserNoRelationshipDto::fromUser).toList()
+                user.getNumFollowing()
         );
     }
 }

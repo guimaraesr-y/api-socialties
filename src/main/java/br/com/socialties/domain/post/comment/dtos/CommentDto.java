@@ -2,16 +2,14 @@ package br.com.socialties.domain.post.comment.dtos;
 
 import br.com.socialties.domain.post.comment.Comment;
 import br.com.socialties.domain.post.dtos.PostDto;
-import br.com.socialties.domain.user.dtos.UserNoRelationshipDto;
-
-import java.util.List;
+import br.com.socialties.domain.user.dtos.UserDto;
 
 public record CommentDto (
         String id,
         String text,
         Integer likesCount,
         Integer dislikesCount,
-        UserNoRelationshipDto user,
+        UserDto user,
         PostDto post
 ) {
 
@@ -21,7 +19,7 @@ public record CommentDto (
                 comment.getText(),
                 comment.getLikesCount(),
                 comment.getDislikesCount(),
-                UserNoRelationshipDto.fromUser(comment.getAuthor()),
+                UserDto.fromUser(comment.getAuthor()),
                 PostDto.fromPost(comment.getPost())
         );
     }

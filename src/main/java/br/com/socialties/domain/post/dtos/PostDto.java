@@ -1,7 +1,7 @@
 package br.com.socialties.domain.post.dtos;
 
 import br.com.socialties.domain.post.Post;
-import br.com.socialties.domain.user.dtos.UserNoRelationshipDto;
+import br.com.socialties.domain.user.dtos.UserDto;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public record PostDto (
     Integer dislikesCount,
     Integer commentsCount,
     List<String> contentPaths,
-    UserNoRelationshipDto author
+    UserDto author
 
 ) {
 
@@ -27,7 +27,7 @@ public record PostDto (
                 post.getDislikesCount(),
                 post.getCommentsCount(),
                 post.getContentPaths(),
-                UserNoRelationshipDto.fromUser(post.getAuthor())
+                UserDto.fromUser(post.getAuthor())
         );
     }
 }

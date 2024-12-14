@@ -4,7 +4,6 @@ import br.com.socialties.domain.user.authorizations.UserAuthorization;
 import br.com.socialties.domain.user.dtos.FollowUserRequestDto;
 import br.com.socialties.domain.user.dtos.UpdateUserRequestDto;
 import br.com.socialties.domain.user.dtos.UserDto;
-import br.com.socialties.domain.user.dtos.UserNoRelationshipDto;
 import br.com.socialties.helpers.controllers.BaseController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,18 +43,18 @@ public class UserController extends BaseController {
 
     @GetMapping("/{userId}/following")
     @PreAuthorize("@userAuthorization.canRead(#userId)")
-    public List<UserNoRelationshipDto> following(@PathVariable String userId) {
+    public List<UserDto> following(@PathVariable String userId) {
         var user = userService.findUser(userId);
         return userService.getFollowing(user)
-                .stream().map(UserNoRelationshipDto::fromUser).toList();
+                .stream().map(UserDto::fromUser).toList();
     }
 
     @GetMapping("/{userId}/followers")
     @PreAuthorize("@userAuthorization.canRead(#userId)")
-    public List<UserNoRelationshipDto> followers(@PathVariable String userId) {
+    public List<UserDto> followers(@PathVariable String userId) {
         var user = userService.findUser(userId);
         return userService.getFollowers(user)
-                .stream().map(UserNoRelationshipDto::fromUser).toList();
+                .stream().map(UserDto::fromUser).toList();
     }
 
     @PostMapping("/follow")

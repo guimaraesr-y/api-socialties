@@ -8,6 +8,7 @@ public record UserNoRelationshipDto (
         String name,
         String email,
         String profilePicturePath,
+        Boolean isPublic,
         Integer numFollowers,
         Integer numFollowing
 
@@ -18,6 +19,7 @@ public record UserNoRelationshipDto (
                 user.getName(),
                 user.getEmail(),
                 user.getProfilePicturePath(),
+                user.getIsPublic(),
                 user.getNumFollowers(),
                 user.getNumFollowing()
         );

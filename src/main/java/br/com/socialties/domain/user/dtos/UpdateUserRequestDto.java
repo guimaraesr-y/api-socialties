@@ -8,6 +8,7 @@ public record UpdateUserRequestDto(
 
         Optional<String> name,
         Optional<String> password,
-        Optional<MultipartFile> profilePicture
+        Optional<MultipartFile> profilePicture,
+        Optional<Boolean> isPublic
 
 ) {}

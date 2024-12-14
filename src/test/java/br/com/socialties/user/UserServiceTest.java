@@ -86,11 +86,20 @@ public class UserServiceTest {
     public void updateUser() {
         var updatedUser = userService.updateUser(
                 john,
-                new UpdateUserRequestDto(Optional.of("John Doe Edited"), Optional.of("updatedpassword"), Optional.empty()) );
+                new UpdateUserRequestDto(
+                        Optional.of("John Doe Edited"),
+                        Optional.of("updatedpassword"),
+                        Optional.empty(),
+                        Optional.empty())
+        );
 
         var updatedUser2 = userService.updateUser(
                 john,
-                new UpdateUserRequestDto(Optional.of("John Doe Edited 2"), Optional.empty(), Optional.empty())
+                new UpdateUserRequestDto(
+                        Optional.of("John Doe Edited 2"),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty())
         );
 
         Assertions.assertEquals("John Doe Edited 2", updatedUser.getName());

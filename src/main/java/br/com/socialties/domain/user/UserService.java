@@ -104,6 +104,13 @@ public class UserService {
         userRepository.save(requestFollower);
     }
 
+    public void rejectFollower(User loggedUser, String requestFollowerId) {
+        var logged = findUser(loggedUser);
+        var requestFollower = findUser(requestFollowerId);
+        logged.removeRequestFollower(requestFollower);
 
+        userRepository.save(logged);
+        userRepository.save(requestFollower);
+    }
 
 }

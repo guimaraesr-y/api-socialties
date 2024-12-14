@@ -42,17 +42,19 @@ public class UserController extends BaseController {
         return UserDto.fromUser(userService.updateUser(loggedUser, updateUserRequestDto));
     }
 
-    @GetMapping("/following")
-    public List<UserNoRelationshipDto> following(Principal principal) {
-        var loggedUser = (User) ((Authentication) principal).getPrincipal();
-        return userService.getFollowing(loggedUser)
+    @GetMapping("/{userId}/following")
+    @PreAuthorize("@userAuthorization.canRead(#userId)")
+    public List<UserNoRelationshipDto> following(@PathVariable String userId) {
+        var user = userService.findUser(userId);
+        return userService.getFollowing(user)
                 .stream().map(UserNoRelationshipDto::fromUser).toList();
     }
 
-    @GetMapping("/followers")
-    public List<UserNoRelationshipDto> followers(Principal principal) {
-        var loggedUser = (User) ((Authentication) principal).getPrincipal();
-        return userService.getFollowers(loggedUser)
+    @GetMapping("/{userId}/followers")
+    @PreAuthorize("@userAuthorization.canRead(#userId)")
+    public List<UserNoRelationshipDto> followers(@PathVariable String userId) {
+        var user = userService.findUser(userId);
+        return userService.getFollowers(user)
                 .stream().map(UserNoRelationshipDto::fromUser).toList();
     }
 

@@ -72,6 +72,12 @@ Para instalar e configurar o projeto, siga estas etapas:
 
    Abra o navegador e vá para `http://localhost:8080`
 
+Para executar os testes com o ambiente de testes, utilize:
+
+```bash
+./mvnw test -D spring.profiles.active=test
+```
+
 ### Dependências
 
 - **Java**: JDK 17
@@ -89,7 +95,7 @@ Certifique-se de que todas as dependências estejam instaladas corretamente ante
 
 ## 📫 Contribuindo com Socialties
 
-Para contribuir com <nome_do_projeto>, siga estas etapas:
+Para contribuir com o projeto, siga estas etapas:
 
 1. Bifurque este repositório.
 2. Crie um branch: `git checkout -b <nome_branch>`.

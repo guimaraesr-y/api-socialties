@@ -1,11 +1,11 @@
 package br.com.socialties.user;
 
 import br.com.socialties.domain.authentication.AuthService;
-import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
 import br.com.socialties.domain.user.User;
 import br.com.socialties.domain.user.UserService;
 import br.com.socialties.domain.user.dtos.FollowUserRequestDto;
 import br.com.socialties.domain.user.dtos.UpdateUserRequestDto;
+import br.com.socialties.user.helpers.UserTestHelper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -26,42 +26,27 @@ public class UserServiceTest {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private UserTestHelper userTestHelper;
+
     private User john;
     private User jane;
 
     @BeforeEach
     public void setup() {
-        try {
-            john = authService.register(
-                    new RegisterRequestDto("John Doe", "johndoe@exameple.com", "password", Optional.empty())
-            );
-            jane = authService.register(
-                    new RegisterRequestDto("Jane Doe", "janedoe@exameple.com", "password", Optional.empty())
-            );
+        john = userTestHelper.createUser();
 
-            userService.follow(john, new FollowUserRequestDto(jane.getId()));
+        var janeUser = new User();
+        janeUser.setName("Jane Doe");
+        janeUser.setEmail("janedoe@exameple.com");
+        jane = userTestHelper.createUser(janeUser);
 
-            if (john == null || jane == null) {
-                throw new RuntimeException("Failed to initialize test data.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assertions.fail("Setup failed: " + e.getMessage());
-        }
+        userService.follow(john, new FollowUserRequestDto(jane.getId()));
     }
 
     @AfterEach
     public void cleanup() {
-        try {
-            authService.deleteUser(john);
-            authService.deleteUser(jane);
-
-            john = null;
-            jane = null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assertions.fail("Cleanup failed: " + e.getMessage());
-        }
+        userTestHelper.tearDown();
     }
 
     @Test

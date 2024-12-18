@@ -9,8 +9,8 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -31,22 +31,22 @@ public class User {
     private String password;
     private Boolean isPublic = true;
 
-    private Integer numFollowers;
-    private Integer numFollowing;
+    private Integer numFollowers = 0;
+    private Integer numFollowing = 0;
 
     @ManyToMany
-    private List<User> followers;
+    private List<User> followers = new ArrayList<>();
 
     @ManyToMany
-    private List<User> following;
+    private List<User> following = new ArrayList<>();
 
     @ManyToMany
-    private List<User> requestFollowers;
+    private List<User> requestFollowers = new ArrayList<>();
 
     @OneToMany
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
 
     public void follow(User user) {
         if (isFollowing(user)) return;

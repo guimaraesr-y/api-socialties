@@ -24,7 +24,14 @@ public class UserTestHelper {
 
         ModelMapperUtil.mapNonNullProperties(userData, defaultUser);
 
-        return userRepository.save(defaultUser);
+        // Tries to find the user by email
+        return userRepository.findByEmail(defaultUser.getEmail())
+                .map(existingUser -> {
+                    // Update the existing user with the properties of defaultUser
+                    ModelMapperUtil.mapNonNullProperties(defaultUser, existingUser);
+                    return userRepository.save(existingUser);
+                })
+                .orElseGet(() -> userRepository.save(defaultUser));
     }
 
     public User createUser() {

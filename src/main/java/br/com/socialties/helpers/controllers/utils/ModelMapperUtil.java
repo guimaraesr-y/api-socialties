@@ -1,6 +1,7 @@
 package br.com.socialties.helpers.controllers.utils;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 public class ModelMapperUtil {
 
@@ -24,10 +25,21 @@ public class ModelMapperUtil {
 
                 if (sourceField != null) {
                     sourceField.setAccessible(true);
-                    Object value = sourceField.get(source);
+                    Object sourceValue = sourceField.get(source);
 
-                    if (value != null) {
-                        field.set(target, value);
+                    if (sourceValue != null) {
+                        // Checks if the field is a collection
+                        if (Collection.class.isAssignableFrom(field.getType())) {
+                            Collection<?> sourceCollection = (Collection<?>) sourceValue;
+                            Collection<?> targetCollection = (Collection<?>) field.get(target);
+
+                            // Does not overwrite the collection in the target if the source is empty
+                            if (!sourceCollection.isEmpty()) {
+                                field.set(target, sourceCollection);
+                            }
+                        } else {
+                            field.set(target, sourceValue);
+                        }
                     }
                 }
             } catch (IllegalAccessException e) {

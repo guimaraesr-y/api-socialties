@@ -18,6 +18,10 @@ public class PostTestHelper {
     private UserTestHelper userTestHelper;
 
     public Post createPost(User user, Post post) {
+        if(post.getId() != null) {
+            return post;
+        }
+
         var owner = userTestHelper.createUser(user);
 
         var defaultPost = new Post();
@@ -31,13 +35,16 @@ public class PostTestHelper {
         return postRepository.save(newPost);
     }
 
+    public Post createPost(User user) {
+        return createPost(user, new Post());
+    }
+
     public Post createPost() {
         return createPost(new User(), new Post());
     }
 
     public void tearDown() {
         postRepository.deleteAll();
-        userTestHelper.tearDown();
     }
 
 }

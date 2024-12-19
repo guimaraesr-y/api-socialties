@@ -17,6 +17,10 @@ public class UserTestHelper {
     private PasswordEncoder passwordEncoder;
 
     public User createUser(User userData) {
+        if(userData.getId() != null) {
+            return userData;
+        }
+
         User defaultUser = new User();
         defaultUser.setEmail("john@example.com");
         defaultUser.setName("John Doe");

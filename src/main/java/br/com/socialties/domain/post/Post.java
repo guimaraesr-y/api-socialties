@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,23 +30,23 @@ public class Post {
     @ManyToOne
     private User author;
 
-    private Integer likesCount;
-    private Integer dislikesCount;
-    private Integer commentsCount;
+    private Integer likesCount = 0;
+    private Integer dislikesCount = 0;
+    private Integer commentsCount = 0;
 
     @OneToMany
     @JoinColumn(name = "post_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<User> likes;
+    private List<User> likes = new ArrayList<>();
 
     @OneToMany
     @JoinColumn(name = "post_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<User> dislikes;
+    private List<User> dislikes = new ArrayList<>();
 
     @OneToMany
     @JoinColumn(name = "post_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
 }

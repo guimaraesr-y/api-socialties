@@ -6,6 +6,8 @@ import br.com.socialties.domain.post.Post;
 import br.com.socialties.domain.post.PostService;
 import br.com.socialties.domain.post.dtos.CreatePostRequestDto;
 import br.com.socialties.domain.user.User;
+import br.com.socialties.post.helpers.PostTestHelper;
+import br.com.socialties.user.helpers.UserTestHelper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,46 +23,34 @@ public class PostServiceTest {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private UserTestHelper userTestHelper;
+
+    @Autowired
+    private PostTestHelper postTestHelper;
     
     private User john;
     private User jane;
     private Post firstPost;
 
     public void setup() {
-        try {
-            john = authService.register(
-                    new RegisterRequestDto("John Doe", "johndoe@exameple.com", "password", Optional.empty())
-            );
-            jane = authService.register(
-                    new RegisterRequestDto("Jane Doe", "janedoe@exameple.com", "password", Optional.empty())
-            );
-            firstPost = postService.createNewPost(
-                    new CreatePostRequestDto("Hello World!", "My first post", null),
-                    john
-            );
+        john = userTestHelper.createUser();
 
-            if (john == null || jane == null || firstPost == null) {
-                throw new RuntimeException("Failed to initialize test data.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assertions.fail("Setup failed: " + e.getMessage());
-        }
+        var janeUser = new User();
+        janeUser.setName("Jane Doe");
+        janeUser.setEmail("janedoe@exameple.com");
+        jane = userTestHelper.createUser(janeUser);
+
+//        firstPost = postService.createNewPost(
+//                new CreatePostRequestDto("Hello World!", "My first post", null),
+//                john
+//        );
+        firstPost = postTestHelper.createPost(john, new Post());
     }
 
     public void cleanup() {
-        try {
-            postService.deletePost(firstPost);
-            authService.deleteUser(john);
-            authService.deleteUser(jane);
-
-            john = null;
-            jane = null;
-            firstPost = null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assertions.fail("Cleanup failed: " + e.getMessage());
-        }
+        postTestHelper.tearDown();
     }
 
     @BeforeEach

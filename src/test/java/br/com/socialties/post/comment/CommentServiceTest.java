@@ -4,10 +4,14 @@ import br.com.socialties.domain.authentication.AuthService;
 import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
 import br.com.socialties.domain.post.Post;
 import br.com.socialties.domain.post.PostService;
+import br.com.socialties.domain.post.comment.Comment;
 import br.com.socialties.domain.post.comment.CommentService;
 import br.com.socialties.domain.post.comment.dtos.CreateCommentRequestDto;
 import br.com.socialties.domain.post.dtos.CreatePostRequestDto;
 import br.com.socialties.domain.user.User;
+import br.com.socialties.post.comment.helpers.CommentTestHelper;
+import br.com.socialties.post.helpers.PostTestHelper;
+import br.com.socialties.user.helpers.UserTestHelper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,29 +31,29 @@ public class CommentServiceTest {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private CommentTestHelper commentTestHelper;
+
+    @Autowired
+    private PostTestHelper postTestHelper;
+
+    @Autowired
+    private UserTestHelper userTestHelper;
+
     private User john;
-    private User jane;
     private Post firstPost;
+    private Comment firstComment;
 
     public void setup() {
-        john = authService.register(
-                new RegisterRequestDto("John Doe", "johndoe@exameple.com", "password", Optional.empty())
-        );
-
-        jane = authService.register(
-                new RegisterRequestDto("Jane Doe", "janedoe@exameple.com", "password", Optional.empty())
-        );
-
-        firstPost = postService.createNewPost(
-                new CreatePostRequestDto("Hello World!", "My first post", null),
-                john
-        );
+        john = userTestHelper.createUser();
+        firstPost = postTestHelper.createPost(john);
+        firstComment = commentTestHelper.createComment(firstPost, john);
     }
 
     public void cleanup() {
-        postService.deletePost(firstPost);
-        authService.deleteUser(john);
-        authService.deleteUser(jane);
+        userTestHelper.tearDown();
+        postTestHelper.tearDown();
+        commentTestHelper.tearDown();
     }
 
     @BeforeEach
@@ -68,7 +72,7 @@ public class CommentServiceTest {
         var comment = commentService.createComment(
                 firstPost.getId(),
                 new CreateCommentRequestDto("My first comment"),
-                jane);
+                john);
 
         Assertions.assertNotNull(comment);
     }
@@ -79,7 +83,7 @@ public class CommentServiceTest {
         var comment = commentService.createComment(
                 firstPost.getId(),
                 new CreateCommentRequestDto("My first comment"),
-                jane
+                john
         );
         var like = commentService.likeComment(comment.getId(), john);
 
@@ -92,7 +96,7 @@ public class CommentServiceTest {
         var comment = commentService.createComment(
                 firstPost.getId(),
                 new CreateCommentRequestDto("My first comment"),
-                jane
+                john
         );
 
         var like = commentService.likeComment(comment.getId(), john);
@@ -106,7 +110,7 @@ public class CommentServiceTest {
         var comment = commentService.createComment(
                 firstPost.getId(),
                 new CreateCommentRequestDto("My first comment"),
-                jane
+                john
         );
 
         var dislike = commentService.dislikeComment(comment.getId(), john);
@@ -119,7 +123,7 @@ public class CommentServiceTest {
         var comment = commentService.createComment(
                 firstPost.getId(),
                 new CreateCommentRequestDto("My first comment"),
-                jane
+                john
         );
 
         var dislike = commentService.dislikeComment(comment.getId(), john);

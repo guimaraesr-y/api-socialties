@@ -1,7 +1,6 @@
 package br.com.socialties.post;
 
 import br.com.socialties.domain.authentication.AuthService;
-import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
 import br.com.socialties.domain.post.Post;
 import br.com.socialties.domain.post.PostService;
 import br.com.socialties.domain.post.dtos.CreatePostRequestDto;
@@ -12,10 +11,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
 @SpringBootTest
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PostServiceTest {
 
     @Autowired
@@ -42,10 +38,6 @@ public class PostServiceTest {
         janeUser.setEmail("janedoe@exameple.com");
         jane = userTestHelper.createUser(janeUser);
 
-//        firstPost = postService.createNewPost(
-//                new CreatePostRequestDto("Hello World!", "My first post", null),
-//                john
-//        );
         firstPost = postTestHelper.createPost(john, new Post());
     }
 
@@ -64,7 +56,6 @@ public class PostServiceTest {
     }
 
     @Test
-    @Order(1)
     public void createPost() {
         var createdPost = postService.createNewPost(
                 new CreatePostRequestDto("Hello World!", "My second post", null),
@@ -75,7 +66,6 @@ public class PostServiceTest {
     }
 
     @Test
-    @Order(2)
     public void likePost() {
         System.out.println(firstPost);
         var liked = postService.likePost(firstPost.getId(), jane);
@@ -83,7 +73,6 @@ public class PostServiceTest {
     }
     
     @Test
-    @Order(3)
     public void unlikePost() {
         var likeFirst = postService.likePost(firstPost.getId(), jane);
         var unlike = postService.likePost(firstPost.getId(), jane);
@@ -91,14 +80,12 @@ public class PostServiceTest {
     }
     
     @Test
-    @Order(4)
     public void dislikePost() {
         var disliked = postService.dislikePost(firstPost.getId(), jane);
         Assertions.assertTrue(disliked);
     }
     
     @Test
-    @Order(5)
     public void undislikePost() {
         postService.dislikePost(firstPost.getId(), jane);
         var disliked = postService.dislikePost(firstPost.getId(), jane);

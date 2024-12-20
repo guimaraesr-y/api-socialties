@@ -51,9 +51,9 @@ public class CommentServiceTest {
     }
 
     public void cleanup() {
-        userTestHelper.tearDown();
-        postTestHelper.tearDown();
         commentTestHelper.tearDown();
+        postTestHelper.tearDown();
+        userTestHelper.tearDown();
     }
 
     @BeforeEach

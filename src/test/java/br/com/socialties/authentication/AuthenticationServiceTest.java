@@ -4,6 +4,7 @@ import br.com.socialties.domain.authentication.AuthService;
 import br.com.socialties.domain.authentication.dtos.LoginRequestDto;
 import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
 import br.com.socialties.domain.user.User;
+import br.com.socialties.user.helpers.UserTestHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,16 +20,17 @@ public class AuthenticationServiceTest {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private UserTestHelper userTestHelper;
+
     private User john;
 
     public void setup() {
-        john = authService.register(
-                new RegisterRequestDto("John Doe", "johndoe@example.com", "password", Optional.empty())
-        );
+        john = userTestHelper.createUser();
     }
 
     public void cleanup() {
-        authService.deleteUser(john);
+        userTestHelper.tearDown();
     }
 
     @BeforeEach
@@ -44,7 +46,7 @@ public class AuthenticationServiceTest {
     @Test
     public void register() {
         var jane = authService.register(
-                new RegisterRequestDto("Jane Doe", "janedoe@example.com", "password", Optional.empty())
+                new RegisterRequestDto("Jane Doe", "janedoe@example.com", "password", Optional.empty(), Optional.empty())
         );
 
         Assertions.assertNotNull(jane);
@@ -52,22 +54,22 @@ public class AuthenticationServiceTest {
 
     @Test
     public void registerWithExistingEmail() {
-        User john;
+        User user;
         try {
-            john = authService.register(
-                    new RegisterRequestDto("John Doe", "johndoe@example.com", "password", Optional.empty())
+            user = authService.register(
+                    new RegisterRequestDto("John Doe", john.getEmail(), "password", Optional.empty(), Optional.empty())
             );
         } catch (Exception e) {
-            john = null;
+            user = null;
         }
 
-        Assertions.assertNull(john);
+        Assertions.assertNull(user);
     }
 
     @Test
     public void correctLogin() {
         var token = authService
-                .login(new LoginRequestDto("johndoe@example.com", "password"));
+                .login(new LoginRequestDto(john.getEmail(), "password"));
 
         Assertions.assertNotNull(token);
     }

@@ -16,6 +16,8 @@ public record RegisterRequestDto (
         @NotBlank(message = "Password field should not be blank")
         String password,
 
+        Optional<Boolean> isPublic,
+
         Optional<MultipartFile> profilePicture
 
 ) {}

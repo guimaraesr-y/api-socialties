@@ -40,6 +40,21 @@ public class UserTestHelper {
         return createUser(new User());
     }
 
+    public User createPrivateUser(User user) {
+        user.setIsPublic(false);
+        return createUser(user);
+    }
+
+    public User createPrivateUser() {
+        return createPrivateUser(new User());
+    }
+
+    public User createUserWithRequestFollower(User user, User follower) {
+        user.setIsPublic(false);
+        follower.follow(user);
+        return createUser(user);
+    }
+
     public void tearDown() {
         userRepository.deleteAll();
     }

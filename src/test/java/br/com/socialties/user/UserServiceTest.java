@@ -5,6 +5,7 @@ import br.com.socialties.domain.user.User;
 import br.com.socialties.domain.user.UserService;
 import br.com.socialties.domain.user.dtos.FollowUserRequestDto;
 import br.com.socialties.domain.user.dtos.UpdateUserRequestDto;
+import br.com.socialties.domain.user.exceptions.FollowYourselfException;
 import br.com.socialties.user.helpers.UserTestHelper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -89,6 +90,54 @@ public class UserServiceTest {
 
         Assertions.assertEquals("John Doe Edited 2", updatedUser.getName());
         Assertions.assertEquals(updatedUser.getPassword(), updatedUser2.getPassword());
+    }
+
+    @Test
+    public void unfollow() {
+        userService.unfollow(john, new FollowUserRequestDto(jane.getId()));
+
+        Assertions.assertEquals(0, userService.getFollowing(john).size());
+        Assertions.assertEquals(0, userService.getFollowers(jane).size());
+    }
+
+    @Test
+    public void followYourself() {
+        Assertions.assertThrows(FollowYourselfException.class, () -> {
+            userService.follow(john, new FollowUserRequestDto(john.getId()));
+        });
+    }
+
+    @Test
+    public void requestFollowingPrivateAccount() {
+        john.unfollow(jane);
+        var privateUser = userTestHelper.createPrivateUser(jane);
+
+        john.follow(privateUser);
+
+        Assertions.assertEquals(1, privateUser.getRequestFollowers().size());
+        Assertions.assertTrue(privateUser.getRequestFollowers().contains(john));
+    }
+
+    @Test
+    public void acceptFollower() {
+        john.unfollow(jane);
+        jane = userTestHelper.createUserWithRequestFollower(jane, john);
+
+        userService.acceptFollower(jane, john.getId());
+
+        Assertions.assertEquals(1, userService.getFollowers(jane).size());
+        Assertions.assertEquals(0, userService.getRequestFollowers(jane).size());
+    }
+
+    @Test
+    public void rejectFollower() {
+        john.unfollow(jane);
+        jane = userTestHelper.createUserWithRequestFollower(jane, john);
+
+        userService.rejectFollower(jane, john.getId());
+
+        Assertions.assertEquals(0, userService.getFollowers(jane).size());
+        Assertions.assertEquals(0, userService.getRequestFollowers(jane).size());
     }
 
 }

@@ -25,12 +25,7 @@ public class PostController extends BaseController {
         var loggedUser = this.getLoggedUser();
         var post = postService.createNewPost(createPostRequestDto, loggedUser);
 
-        return new CreatePostResponseDto(
-                post.getId(),
-                post.getTitle(),
-                post.getDescription(),
-                post.getContentPaths()
-        );
+        return CreatePostResponseDto.fromPost(post);
     }
 
     @GetMapping

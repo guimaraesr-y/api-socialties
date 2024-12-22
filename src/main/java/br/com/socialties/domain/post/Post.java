@@ -25,7 +25,7 @@ public class Post {
     private String id;
     private String title;
     private String description;
-    private List<String> contentPaths;
+    private List<String> contentPaths = new ArrayList<>();
 
     @ManyToOne
     private User author;
@@ -48,5 +48,39 @@ public class Post {
     @JoinColumn(name = "post_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Comment> comments = new ArrayList<>();
+
+    public Boolean like(User user) {
+        if (likes.contains(user)) {
+            likes.remove(user);
+            likesCount -= 1;
+            return false;
+        }
+
+        if (dislikes.contains(user)) {
+            dislikes.remove(user);
+            dislikesCount -= 1;
+        }
+
+        likes.add(user);
+        likesCount += 1;
+        return true;
+    }
+
+    public Boolean dislike(User user) {
+        if (dislikes.contains(user)) {
+            dislikes.remove(user);
+            dislikesCount -= 1;
+            return false;
+        }
+
+        if (likes.contains(user)) {
+            likes.remove(user);
+            likesCount -= 1;
+        }
+
+        dislikes.add(user);
+        dislikesCount += 1;
+        return true;
+    }
 
 }

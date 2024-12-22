@@ -4,10 +4,9 @@ import br.com.socialties.domain.post.dtos.CreatePostRequestDto;
 import br.com.socialties.domain.post.dtos.CreatePostResponseDto;
 import br.com.socialties.domain.post.dtos.PostDto;
 import br.com.socialties.domain.post.dtos.UpdatePostRequestDto;
-import br.com.socialties.domain.user.User;
+import br.com.socialties.helpers.controllers.BaseController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -17,13 +16,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/post")
 @RequiredArgsConstructor
-public class PostController {
+public class PostController extends BaseController {
 
     private final PostService postService;
 
     @PostMapping
-    public CreatePostResponseDto createPost(@Valid @ModelAttribute CreatePostRequestDto createPostRequestDto, Principal principal) {
-        var loggedUser = (User) ((Authentication) principal).getPrincipal();
+    public CreatePostResponseDto createPost(@Valid @ModelAttribute CreatePostRequestDto createPostRequestDto) {
+        var loggedUser = this.getLoggedUser();
         var post = postService.createNewPost(createPostRequestDto, loggedUser);
 
         return new CreatePostResponseDto(
@@ -36,6 +35,9 @@ public class PostController {
 
     @GetMapping
     public List<PostDto> getPosts() {
+        // TODO: Implement is follower check
+        // TODO: Implement pagination
+        // TODO: Add fields liked and disliked
         return postService.getPosts()
                 .stream().map(PostDto::fromPost).toList();
     }
@@ -62,16 +64,16 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/like")
-    public Map<String, Boolean> likePost(@PathVariable String postId, Principal principal) {
-        var loggedUser = (User) ((Authentication) principal).getPrincipal();
+    public Map<String, Boolean> likePost(@PathVariable String postId) {
+        var loggedUser = this.getLoggedUser();
         var liked = postService.likePost(postId, loggedUser);
 
         return Map.of("liked", liked);
     }
 
     @PostMapping("/{postId}/dislike")
-    public Map<String, Boolean> dislikePost(@PathVariable String postId, Principal principal) {
-        var loggedUser = (User) ((Authentication) principal).getPrincipal();
+    public Map<String, Boolean> dislikePost(@PathVariable String postId) {
+        var loggedUser = this.getLoggedUser();
         var disliked = postService.dislikePost(postId, loggedUser);
 
         return Map.of("disliked", disliked);

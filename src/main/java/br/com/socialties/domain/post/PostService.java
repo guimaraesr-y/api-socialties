@@ -29,15 +29,7 @@ public class PostService {
 
         post.setTitle(createPostRequestDto.title());
         post.setDescription(createPostRequestDto.description());
-        post.setContentPaths(new ArrayList<>());
-
         post.setAuthor(user);
-        post.setLikes(new ArrayList<>());
-        post.setDislikes(new ArrayList<>());
-        post.setComments(new ArrayList<>());
-        post.setLikesCount(0);
-        post.setDislikesCount(0);
-        post.setCommentsCount(0);
 
         // store the files
         var files = createPostRequestDto.contents();
@@ -62,42 +54,22 @@ public class PostService {
 
     public Boolean likePost(String postId, User loggedUser) {
         var post = findPost(postId);
-
-        // finds the full user object from the logged user
         var user = userService.findUser(loggedUser);
 
-        // check if the user already liked the post and remove the like
-        if(post.getLikes().contains(user)) {
-            post.getLikes().remove(loggedUser);
-            post.setLikesCount(post.getLikesCount() - 1);
-            return false;
-        }
-
-        post.getLikes().add(loggedUser);
-        post.setLikesCount(post.getLikesCount() + 1);
-
+        var liked = post.like(user);
         postRepository.save(post);
-        return true;
+
+        return liked;
     }
 
     public Boolean dislikePost(String postId, User loggedUser) {
         var post = findPost(postId);
-
-        // finds the full user object from the logged user
         var user = userService.findUser(loggedUser);
 
-        // check if the user already disliked the post and remove the dislike
-        if(post.getDislikes().contains(user)) {
-            post.getDislikes().remove(loggedUser);
-            post.setDislikesCount(post.getDislikesCount() - 1);
-            return false;
-        }
-
-        post.getDislikes().add(loggedUser);
-        post.setDislikesCount(post.getDislikesCount() + 1);
-
+        var disliked = post.dislike(user);
         postRepository.save(post);
-        return true;
+        
+        return disliked;
     }
 
     public Post findPost(String postId) {

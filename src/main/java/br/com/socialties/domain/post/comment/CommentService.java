@@ -35,11 +35,6 @@ public class CommentService {
         comment.setAuthor(user);
         comment.setPost(post);
 
-        comment.setLikes(new ArrayList<>());
-        comment.setDislikes(new ArrayList<>());
-        comment.setLikesCount(0);
-        comment.setDislikesCount(0);
-
         post.setCommentsCount(post.getCommentsCount() + 1);
         post.getComments().add(comment);
 

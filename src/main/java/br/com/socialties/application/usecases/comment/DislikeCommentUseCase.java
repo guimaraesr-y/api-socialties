@@ -1,6 +1,6 @@
 package br.com.socialties.application.usecases.comment;
 
-import br.com.socialties.application.usecases.user.FindUser;
+import br.com.socialties.application.usecases.user.FindUserUseCase;
 import br.com.socialties.domain.comment.CommentRepository;
 import br.com.socialties.domain.user.User;
 import lombok.RequiredArgsConstructor;
@@ -8,15 +8,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class DislikeComment {
+public class DislikeCommentUseCase {
 
     private final CommentRepository commentRepository;
-    private final FindComment findComment;
-    private final FindUser findUser;
+    private final FindCommentUseCase findCommentUseCase;
+    private final FindUserUseCase findUserUseCase;
 
     public Boolean execute(String commentId, User loggedUser) {
-        var comment = findComment.execute(commentId);
-        var user = findUser.execute(loggedUser);
+        var comment = findCommentUseCase.execute(commentId);
+        var user = findUserUseCase.execute(loggedUser);
 
         if(comment.getDislikes().contains(user)) {
             comment.getDislikes().remove(loggedUser);

@@ -1,7 +1,7 @@
 package br.com.socialties.application.usecases.comment;
 
-import br.com.socialties.application.usecases.post.FindPost;
-import br.com.socialties.application.usecases.user.FindUser;
+import br.com.socialties.application.usecases.post.FindPostUseCase;
+import br.com.socialties.application.usecases.user.FindUserUseCase;
 import br.com.socialties.domain.comment.Comment;
 import br.com.socialties.domain.comment.CommentRepository;
 import br.com.socialties.domain.comment.dtos.CreateCommentRequestDto;
@@ -11,15 +11,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateComment {
+public class CreateCommentUseCase {
 
     private final CommentRepository commentRepository;
-    private final FindUser findUser;
-    private final FindPost findPost;
+    private final FindUserUseCase findUserUseCase;
+    private final FindPostUseCase findPostUseCase;
 
     public Comment execute(String postId, CreateCommentRequestDto createCommentRequestDto, User loggedUser) {
-        var user = findUser.execute(loggedUser);
-        var post = findPost.execute(postId);
+        var user = findUserUseCase.execute(loggedUser);
+        var post = findPostUseCase.execute(postId);
 
         Comment comment = new Comment();
         comment.setText(createCommentRequestDto.text());

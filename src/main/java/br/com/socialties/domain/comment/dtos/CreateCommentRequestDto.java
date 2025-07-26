@@ -1,4 +1,4 @@
-package br.com.socialties.domain.post.comment.dtos;
+package br.com.socialties.domain.comment.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,4 +1,4 @@
-package br.com.socialties.domain.post.comment;
+package br.com.socialties.domain.comment;
 
 import br.com.socialties.domain.post.Post;
 import br.com.socialties.domain.user.User;

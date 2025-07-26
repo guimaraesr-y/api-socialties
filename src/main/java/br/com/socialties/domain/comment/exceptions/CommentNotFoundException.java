@@ -1,4 +1,4 @@
-package br.com.socialties.domain.post.comment.exceptions;
+package br.com.socialties.domain.comment.exceptions;
 
 import br.com.socialties.exception.ApplicationException;
 import org.springframework.http.HttpStatus;

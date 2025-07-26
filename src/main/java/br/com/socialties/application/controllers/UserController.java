@@ -1,5 +1,6 @@
-package br.com.socialties.domain.user;
+package br.com.socialties.application.controllers;
 
+import br.com.socialties.application.usecases.user.*;
 import br.com.socialties.domain.user.authorizations.UserAuthorization;
 import br.com.socialties.domain.user.dtos.FollowUserRequestDto;
 import br.com.socialties.domain.user.dtos.PrivateUserDto;
@@ -19,8 +20,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController extends BaseController {
 
-    private final UserService userService;
     private final UserAuthorization userAuthorization;
+    private final FindUserUseCase findUserUseCase;
+    private final UpdateUserUseCase updateUserUseCase;
+    private final ListUserFollowingUseCase listUserFollowingUseCase;
+    private final ListUserFollowersUseCase listUserFollowersUseCase;
+    private final ListUserFollowRequestsUseCase listUserFollowRequestsUseCase;
+    private final FollowUserUseCase followUserUseCase;
+    private final UnfollowUserUseCase unfollowUserUseCase;
+    private final AcceptFollowRequestUseCase acceptFollowRequestUseCase;
+    private final RejectFollowRequestUseCase rejectFollowRequestUseCase;
+
 
     @GetMapping("/me")
     public UserDto me() {
@@ -32,10 +42,10 @@ public class UserController extends BaseController {
     public ResponseEntity<?> getUserData(@PathVariable String userId) {
         try {
             userAuthorization.canRead(userId);
-            UserDto userDto = UserDto.fromUser(userService.findUser(userId));
+            UserDto userDto = UserDto.fromUser(findUserUseCase.execute(userId));
             return ResponseEntity.ok(userDto);
         } catch (Exception e) {
-            PrivateUserDto privateUserDto = PrivateUserDto.fromUser(userService.findUser(userId));
+            PrivateUserDto privateUserDto = PrivateUserDto.fromUser(findUserUseCase.execute(userId));
             return ResponseEntity.ok(privateUserDto);
         }
     }
@@ -44,37 +54,37 @@ public class UserController extends BaseController {
     @PreAuthorize("@userAuthorization.canUpdate(#userId)")
     public UserDto update(@Valid @ModelAttribute UpdateUserRequestDto updateUserRequestDto, @PathVariable String userId) {
         var loggedUser = this.getLoggedUser();
-        return UserDto.fromUser(userService.updateUser(loggedUser, updateUserRequestDto));
+        return UserDto.fromUser(updateUserUseCase.execute(loggedUser, updateUserRequestDto));
     }
 
     @GetMapping("/{userId}/following")
     @PreAuthorize("@userAuthorization.canRead(#userId)")
     public List<UserDto> following(@PathVariable String userId) {
-        var user = userService.findUser(userId);
-        return userService.getFollowing(user)
+        var user = findUserUseCase.execute(userId);
+        return listUserFollowingUseCase.execute(user)
                 .stream().map(UserDto::fromUser).toList();
     }
 
     @GetMapping("/{userId}/followers")
     @PreAuthorize("@userAuthorization.canRead(#userId)")
     public List<UserDto> followers(@PathVariable String userId) {
-        var user = userService.findUser(userId);
-        return userService.getFollowers(user)
+        var user = findUserUseCase.execute(userId);
+        return listUserFollowersUseCase.execute(user)
                 .stream().map(UserDto::fromUser).toList();
     }
 
     @GetMapping("/{userId}/follow-requests")
     @PreAuthorize("@userAuthorization.isOwner(#userId)")
     public List<UserDto> followRequests(@PathVariable String userId) {
-        var user = userService.findUser(userId);
-        return userService.getRequestFollowers(user)
+        var user = findUserUseCase.execute(userId);
+        return listUserFollowRequestsUseCase.execute(user)
                 .stream().map(UserDto::fromUser).toList();
     }
 
     @PostMapping("/follow")
     public ResponseEntity<Void> follow(@Valid @RequestBody FollowUserRequestDto followUserRequestDto) {
         var loggedUser = this.getLoggedUser();
-        userService.follow(loggedUser, followUserRequestDto);
+        followUserUseCase.execute(loggedUser, followUserRequestDto);
 
         return ResponseEntity.ok().build();
     }
@@ -82,7 +92,7 @@ public class UserController extends BaseController {
     @PostMapping("/unfollow")
     public ResponseEntity<Void> unfollow(@Valid @RequestBody FollowUserRequestDto followUserRequestDto) {
         var loggedUser = this.getLoggedUser();
-        userService.unfollow(loggedUser, followUserRequestDto);
+        unfollowUserUseCase.execute(loggedUser, followUserRequestDto);
 
         return ResponseEntity.ok().build();
     }
@@ -90,14 +100,14 @@ public class UserController extends BaseController {
     @PostMapping("/{userId}/follow-request/accept")
     public ResponseEntity<Void> acceptFollowRequest(@PathVariable String userId) {
         var loggedUser = this.getLoggedUser();
-        userService.acceptFollower(loggedUser, userId);
+        acceptFollowRequestUseCase.execute(loggedUser, userId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{userId}/follow-request/reject")
     public ResponseEntity<Void> rejectFollowRequest(@PathVariable String userId) {
         var loggedUser = this.getLoggedUser();
-        userService.acceptFollower(loggedUser, userId);
+        rejectFollowRequestUseCase.execute(loggedUser, userId);
         return ResponseEntity.ok().build();
     }
 

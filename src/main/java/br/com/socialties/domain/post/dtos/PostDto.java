@@ -17,7 +17,6 @@ public record PostDto (
     UserDto author
 
 ) {
-
     public static PostDto fromPost(Post post) {
         return new PostDto(
                 post.getId(),

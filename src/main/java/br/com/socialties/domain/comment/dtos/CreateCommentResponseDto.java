@@ -1,6 +1,6 @@
-package br.com.socialties.domain.post.comment.dtos;
+package br.com.socialties.domain.comment.dtos;
 
-import br.com.socialties.domain.post.comment.Comment;
+import br.com.socialties.domain.comment.Comment;
 
 public record CreateCommentResponseDto (
 

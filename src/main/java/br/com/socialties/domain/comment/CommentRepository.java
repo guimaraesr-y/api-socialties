@@ -1,4 +1,4 @@
-package br.com.socialties.domain.post.comment;
+package br.com.socialties.domain.comment;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

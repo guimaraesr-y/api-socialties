@@ -1,0 +1,35 @@
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: socialties-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin -uroot -p${DATABASE_ROOT_PASSWORD} ping"]
+    volumes:
+      - db-data:/var/lib/mysql
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: ${JAR_FILE}
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    container_name: socialties-app
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+volumes:
+  db-data:
+    driver: local

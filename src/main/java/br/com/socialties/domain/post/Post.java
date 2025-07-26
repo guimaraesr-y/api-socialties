@@ -1,6 +1,6 @@
 package br.com.socialties.domain.post;
 
-import br.com.socialties.domain.post.comment.Comment;
+import br.com.socialties.domain.comment.Comment;
 import br.com.socialties.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

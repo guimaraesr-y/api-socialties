@@ -1,8 +1,14 @@
 package br.com.socialties.user;
 
-import br.com.socialties.domain.authentication.AuthService;
+import br.com.socialties.application.usecases.user.AcceptFollowRequestUseCase;
+import br.com.socialties.application.usecases.user.FollowUserUseCase;
+import br.com.socialties.application.usecases.user.ListUserFollowersUseCase;
+import br.com.socialties.application.usecases.user.ListUserFollowingUseCase;
+import br.com.socialties.application.usecases.user.ListUserFollowRequestsUseCase;
+import br.com.socialties.application.usecases.user.RejectFollowRequestUseCase;
+import br.com.socialties.application.usecases.user.UnfollowUserUseCase;
+import br.com.socialties.application.usecases.user.UpdateUserUseCase;
 import br.com.socialties.domain.user.User;
-import br.com.socialties.domain.user.UserService;
 import br.com.socialties.domain.user.dtos.FollowUserRequestDto;
 import br.com.socialties.domain.user.dtos.UpdateUserRequestDto;
 import br.com.socialties.domain.user.exceptions.FollowYourselfException;
@@ -19,16 +25,34 @@ import java.util.Optional;
 
 @SpringBootTest
 @Transactional
-public class UserServiceTest {
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private AuthService authService;
+public class UserUseCaseTest {
 
     @Autowired
     private UserTestHelper userTestHelper;
+
+    @Autowired
+    private FollowUserUseCase followUserUseCase;
+
+    @Autowired
+    private ListUserFollowersUseCase listUserFollowersUseCase;
+
+    @Autowired
+    private ListUserFollowingUseCase listUserFollowingUseCase;
+
+    @Autowired
+    private UpdateUserUseCase updateUserUseCase;
+
+    @Autowired
+    private UnfollowUserUseCase unfollowUserUseCase;
+
+    @Autowired
+    private AcceptFollowRequestUseCase acceptFollowRequestUseCase;
+
+    @Autowired
+    private RejectFollowRequestUseCase rejectFollowRequestUseCase;
+
+    @Autowired
+    private ListUserFollowRequestsUseCase listUserFollowRequestsUseCase;
 
     private User john;
     private User jane;
@@ -42,7 +66,7 @@ public class UserServiceTest {
         janeUser.setEmail("janedoe@exameple.com");
         jane = userTestHelper.createUser(janeUser);
 
-        userService.follow(john, new FollowUserRequestDto(jane.getId()));
+        followUserUseCase.execute(john, new FollowUserRequestDto(jane.getId()));
     }
 
     @AfterEach
@@ -52,8 +76,8 @@ public class UserServiceTest {
 
     @Test
     public void getFollowers() {
-        var followersJohn = userService.getFollowers(john);
-        var followersJane = userService.getFollowers(jane);
+        var followersJohn = listUserFollowersUseCase.execute(john);
+        var followersJane = listUserFollowersUseCase.execute(jane);
 
         Assertions.assertEquals(0, followersJohn.size());
         Assertions.assertEquals(1, followersJane.size());
@@ -61,8 +85,8 @@ public class UserServiceTest {
 
     @Test
     public void getFollowing() {
-        var followingJohn = userService.getFollowing(john);
-        var followingJane = userService.getFollowing(jane);
+        var followingJohn = listUserFollowingUseCase.execute(john);
+        var followingJane = listUserFollowingUseCase.execute(jane);
 
         Assertions.assertEquals(1, followingJohn.size());
         Assertions.assertEquals(0, followingJane.size());
@@ -70,7 +94,7 @@ public class UserServiceTest {
 
     @Test
     public void updateUser() {
-        var updatedUser = userService.updateUser(
+        var updatedUser = updateUserUseCase.execute(
                 john,
                 new UpdateUserRequestDto(
                         Optional.of("John Doe Edited"),
@@ -79,7 +103,7 @@ public class UserServiceTest {
                         Optional.empty())
         );
 
-        var updatedUser2 = userService.updateUser(
+        var updatedUser2 = updateUserUseCase.execute(
                 john,
                 new UpdateUserRequestDto(
                         Optional.of("John Doe Edited 2"),
@@ -94,16 +118,16 @@ public class UserServiceTest {
 
     @Test
     public void unfollow() {
-        userService.unfollow(john, new FollowUserRequestDto(jane.getId()));
+        unfollowUserUseCase.execute(john, new FollowUserRequestDto(jane.getId()));
 
-        Assertions.assertEquals(0, userService.getFollowing(john).size());
-        Assertions.assertEquals(0, userService.getFollowers(jane).size());
+        Assertions.assertEquals(0, listUserFollowingUseCase.execute(john).size());
+        Assertions.assertEquals(0, listUserFollowersUseCase.execute(jane).size());
     }
 
     @Test
     public void followYourself() {
         Assertions.assertThrows(FollowYourselfException.class, () -> {
-            userService.follow(john, new FollowUserRequestDto(john.getId()));
+            followUserUseCase.execute(john, new FollowUserRequestDto(john.getId()));
         });
     }
 
@@ -123,10 +147,10 @@ public class UserServiceTest {
         john.unfollow(jane);
         jane = userTestHelper.createUserWithRequestFollower(jane, john);
 
-        userService.acceptFollower(jane, john.getId());
+        acceptFollowRequestUseCase.execute(jane, john.getId());
 
-        Assertions.assertEquals(1, userService.getFollowers(jane).size());
-        Assertions.assertEquals(0, userService.getRequestFollowers(jane).size());
+        Assertions.assertEquals(1, listUserFollowersUseCase.execute(jane).size());
+        Assertions.assertEquals(0, listUserFollowRequestsUseCase.execute(jane).size());
     }
 
     @Test
@@ -134,10 +158,10 @@ public class UserServiceTest {
         john.unfollow(jane);
         jane = userTestHelper.createUserWithRequestFollower(jane, john);
 
-        userService.rejectFollower(jane, john.getId());
+        rejectFollowRequestUseCase.execute(jane, john.getId());
 
-        Assertions.assertEquals(0, userService.getFollowers(jane).size());
-        Assertions.assertEquals(0, userService.getRequestFollowers(jane).size());
+        Assertions.assertEquals(0, listUserFollowersUseCase.execute(jane).size());
+        Assertions.assertEquals(0, listUserFollowRequestsUseCase.execute(jane).size());
     }
 
 }

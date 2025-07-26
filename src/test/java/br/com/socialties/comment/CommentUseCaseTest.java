@@ -1,35 +1,32 @@
-package br.com.socialties.post.comment;
+package br.com.socialties.comment;
 
-import br.com.socialties.domain.authentication.AuthService;
-import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
+import br.com.socialties.application.usecases.comment.CreateCommentUseCase;
+import br.com.socialties.application.usecases.comment.DislikeCommentUseCase;
+import br.com.socialties.application.usecases.comment.LikeCommentUseCase;
 import br.com.socialties.domain.post.Post;
-import br.com.socialties.domain.post.PostService;
-import br.com.socialties.domain.post.comment.Comment;
-import br.com.socialties.domain.post.comment.CommentService;
-import br.com.socialties.domain.post.comment.dtos.CreateCommentRequestDto;
-import br.com.socialties.domain.post.dtos.CreatePostRequestDto;
+import br.com.socialties.domain.comment.Comment;
+import br.com.socialties.domain.comment.dtos.CreateCommentRequestDto;
 import br.com.socialties.domain.user.User;
-import br.com.socialties.post.comment.helpers.CommentTestHelper;
+import br.com.socialties.comment.helpers.CommentTestHelper;
 import br.com.socialties.post.helpers.PostTestHelper;
 import br.com.socialties.user.helpers.UserTestHelper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
 @SpringBootTest
-@TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
-public class CommentServiceTest {
+@Transactional
+public class CommentUseCaseTest {
 
     @Autowired
-    private PostService postService;
+    private CreateCommentUseCase createComment;
 
     @Autowired
-    private CommentService commentService;
+    private LikeCommentUseCase likeComment;
 
     @Autowired
-    private AuthService authService;
+    private DislikeCommentUseCase dislikeComment;
 
     @Autowired
     private CommentTestHelper commentTestHelper;
@@ -69,65 +66,64 @@ public class CommentServiceTest {
     @Test
     @Order(1)
     public void createComment() {
-        var comment = commentService.createComment(
+        var comment = createComment.execute(
                 firstPost.getId(),
                 new CreateCommentRequestDto("My first comment"),
-                john);
-
+                john
+        );
         Assertions.assertNotNull(comment);
     }
 
     @Test
     @Order(2)
     public void likeComment() {
-        var comment = commentService.createComment(
+        var comment = createComment.execute(
                 firstPost.getId(),
                 new CreateCommentRequestDto("My first comment"),
                 john
         );
-        var like = commentService.likeComment(comment.getId(), john);
-
+        var like = likeComment.execute(comment.getId(), john);
         Assertions.assertTrue(like);
     }
 
     @Test
     @Order(3)
     public void unlikeComment() {
-        var comment = commentService.createComment(
+        var comment = createComment.execute(
                 firstPost.getId(),
                 new CreateCommentRequestDto("My first comment"),
                 john
         );
 
-        var like = commentService.likeComment(comment.getId(), john);
-        var unlike = commentService.likeComment(comment.getId(), john);
+        var like = likeComment.execute(comment.getId(), john);
+        var unlike = likeComment.execute(comment.getId(), john);
         Assertions.assertFalse(unlike);
     }
 
     @Test
     @Order(4)
     public void dislikeComment() {
-        var comment = commentService.createComment(
+        var comment = createComment.execute(
                 firstPost.getId(),
                 new CreateCommentRequestDto("My first comment"),
                 john
         );
 
-        var dislike = commentService.dislikeComment(comment.getId(), john);
+        var dislike = dislikeComment.execute(comment.getId(), john);
         Assertions.assertTrue(dislike);
     }
 
     @Test
     @Order(5)
     public void undislikeComment() {
-        var comment = commentService.createComment(
+        var comment = createComment.execute(
                 firstPost.getId(),
                 new CreateCommentRequestDto("My first comment"),
                 john
         );
 
-        var dislike = commentService.dislikeComment(comment.getId(), john);
-        var undislike = commentService.dislikeComment(comment.getId(), john);
+        var dislike = dislikeComment.execute(comment.getId(), john);
+        var undislike = dislikeComment.execute(comment.getId(), john);
         Assertions.assertFalse(undislike);
     }
 

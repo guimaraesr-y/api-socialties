@@ -1,8 +1,8 @@
-package br.com.socialties.post.comment.helpers;
+package br.com.socialties.comment.helpers;
 
 import br.com.socialties.domain.post.Post;
-import br.com.socialties.domain.post.comment.Comment;
-import br.com.socialties.domain.post.comment.CommentRepository;
+import br.com.socialties.domain.comment.Comment;
+import br.com.socialties.domain.comment.CommentRepository;
 import br.com.socialties.domain.user.User;
 import br.com.socialties.helpers.controllers.utils.ModelMapperUtil;
 import br.com.socialties.post.helpers.PostTestHelper;

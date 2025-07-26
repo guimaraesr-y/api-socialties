@@ -1,6 +1,7 @@
 package br.com.socialties.authentication;
 
-import br.com.socialties.domain.authentication.AuthService;
+import br.com.socialties.application.usecases.auth.LoginUserUseCase;
+import br.com.socialties.application.usecases.auth.RegisterUserUseCase;
 import br.com.socialties.domain.authentication.dtos.LoginRequestDto;
 import br.com.socialties.domain.authentication.dtos.RegisterRequestDto;
 import br.com.socialties.domain.user.User;
@@ -15,13 +16,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Optional;
 
 @SpringBootTest
-public class AuthenticationServiceTest {
-
-    @Autowired
-    private AuthService authService;
+public class AuthenticationUseCaseTest {
 
     @Autowired
     private UserTestHelper userTestHelper;
+
+    @Autowired
+    private RegisterUserUseCase registerUserUseCase;
+
+    @Autowired
+    private LoginUserUseCase loginUserUseCase;
 
     private User john;
 
@@ -45,7 +49,7 @@ public class AuthenticationServiceTest {
 
     @Test
     public void register() {
-        var jane = authService.register(
+        var jane = registerUserUseCase.execute(
                 new RegisterRequestDto("Jane Doe", "janedoe@example.com", "password", Optional.empty(), Optional.empty())
         );
 
@@ -56,7 +60,7 @@ public class AuthenticationServiceTest {
     public void registerWithExistingEmail() {
         User user;
         try {
-            user = authService.register(
+            user = registerUserUseCase.execute(
                     new RegisterRequestDto("John Doe", john.getEmail(), "password", Optional.empty(), Optional.empty())
             );
         } catch (Exception e) {
@@ -68,8 +72,8 @@ public class AuthenticationServiceTest {
 
     @Test
     public void correctLogin() {
-        var token = authService
-                .login(new LoginRequestDto(john.getEmail(), "password"));
+        var token = loginUserUseCase
+                .execute(new LoginRequestDto(john.getEmail(), "password"));
 
         Assertions.assertNotNull(token);
     }
@@ -79,8 +83,8 @@ public class AuthenticationServiceTest {
         String token;
 
         try {
-            token = authService
-                    .login(new LoginRequestDto("janedoe@example.com", "wrongpassword"));
+            token = loginUserUseCase
+                    .execute(new LoginRequestDto("janedoe@example.com", "wrongpassword"));
         } catch (Exception e) {
             token = null;
         }

@@ -10,6 +10,6 @@ public class StorageProperties {
     /**
      * Folder location for storing files
      */
-    private final String location = "uploads";
+    private String location;
 
 }

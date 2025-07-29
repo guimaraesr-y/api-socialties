@@ -17,7 +17,7 @@ public class StorageController {
 
     @GetMapping("/{filename:.+}")
     public Resource getFile(@PathVariable String filename) {
-        return storageService.loadAsResource(filename);
+        return storageService.retrieve(filename);
     }
 
 }
